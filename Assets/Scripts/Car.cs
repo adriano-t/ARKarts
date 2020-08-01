@@ -43,12 +43,15 @@ public class Car : MonoBehaviour
         speed *= 0.99f;
         if(speed < 0.01f)
             speed *= 0.1f;
+
         //rallenta di piu' se gira
         if(holdLeft || holdRight) 
             speed *= 0.99f;
 
         transform.position -= transform.forward * speed;
         Debug.Log("speed: " + speed);
+
+        transform.position = Vector3.ClampMagnitude(transform.position, 10.0f);
     }
 
     public void Accelerate(bool pressed)
