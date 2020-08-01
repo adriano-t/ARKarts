@@ -5,6 +5,7 @@ using System.Collections.Generic;
 //Interpolation between points with a Catmull-Rom spline
 public class CatmullRom : MonoBehaviour
 {
+    //public Transform plane;
 	public static CatmullRom instance;
 	//Has to be at least 4 points
 	public List<MarkerTarget> controlPointsList = new List<MarkerTarget>();
@@ -30,8 +31,16 @@ public class CatmullRom : MonoBehaviour
 		{
 			positions[i] = controlPointsList[i].transform.position;
 		}
+
 		lr.positionCount = positions.Length;
 		lr.SetPositions(positions);
+        if(controlPointsList.Count> 0)
+        {
+			transform.forward = -controlPointsList[0].transform.up; 
+            //plane.position = controlPointsList[0].transform.position - controlPointsList[0].transform.up * 0.1f;
+            //plane.rotation = controlPointsList[0].transform.rotation;
+        }
+        
 	}
 
 	//Display without having to press play
