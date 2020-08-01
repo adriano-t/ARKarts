@@ -25,10 +25,10 @@ public class Car : MonoBehaviour
     public void Update()
     {
         if(holdLeft)
-            transform.RotateAround(transform.position, transform.up, Time.deltaTime * turnRadius * speed/maxSpeed);
+            transform.RotateAround(transform.position, transform.up, - Time.deltaTime * turnRadius * speed/maxSpeed);
 
         if(holdRight)
-            transform.RotateAround(transform.position, transform.up, - Time.deltaTime * turnRadius* speed/maxSpeed);
+            transform.RotateAround(transform.position, transform.up, Time.deltaTime * turnRadius* speed/maxSpeed);
             
         if(holdAccelerator)
             speed += acceleration * Time.deltaTime * 0.01f;
