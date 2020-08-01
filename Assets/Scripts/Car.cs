@@ -24,11 +24,11 @@ public class Car : MonoBehaviour
 
     public void Update()
     {
-        if(holdLeft)
-            transform.RotateAround(transform.position, transform.up, - Time.deltaTime * turnRadius * speed/maxSpeed);
+        if(holdLeft && Mathf.Abs(speed) > 0.01f)
+            transform.RotateAround(transform.position, transform.up, - Time.deltaTime  * turnRadius);
 
-        if(holdRight)
-            transform.RotateAround(transform.position, transform.up, Time.deltaTime * turnRadius* speed/maxSpeed);
+        if(holdRight && Mathf.Abs(speed) > 0.01f)
+            transform.RotateAround(transform.position, transform.up, Time.deltaTime  * turnRadius);
             
         if(holdAccelerator)
             speed += acceleration * Time.deltaTime * 0.01f;
@@ -40,11 +40,12 @@ public class Car : MonoBehaviour
         speed = Mathf.Clamp(speed, -maxSpeed, maxSpeed);
 
         //rallenta
-        speed *= 0.999f;
-
+        speed *= 0.99f;
+        if(speed < 0.01f)
+            speed *= 0.1f;
         //rallenta di piu' se gira
         if(holdLeft || holdRight) 
-            speed *= 0.999f;
+            speed *= 0.99f;
 
         transform.position -= transform.forward * speed;
         Debug.Log("speed: " + speed);
