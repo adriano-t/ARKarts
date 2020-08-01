@@ -49,9 +49,16 @@ public class Car : MonoBehaviour
             speed *= 0.99f;
 
         transform.position -= transform.forward * speed;
-        Debug.Log("speed: " + speed);
+        //Debug.Log("speed: " + speed);
 
         transform.position = Vector3.ClampMagnitude(transform.position, 10.0f);
+
+        //slow down outside
+        if(!Physics.CheckSphere(transform.position, 1.2f))
+        {
+            if(speed > maxSpeed/2.0f)
+                speed *= 0.9f;
+        }
     }
 
     public void Accelerate(bool pressed)

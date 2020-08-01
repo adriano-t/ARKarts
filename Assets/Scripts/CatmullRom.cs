@@ -11,7 +11,11 @@ public class CatmullRom : MonoBehaviour
 	public List<MarkerTarget> controlPointsList = new List<MarkerTarget>();
 	//Are we making a line or a loop?
 	public bool isLooping = true;
+	float refreshTime = 0;
 	LineRenderer lr;
+	MeshCollider meshCollider;
+	
+	Mesh mesh;
 	private void Awake ()
 	{
 		if(instance != null)
@@ -21,15 +25,26 @@ public class CatmullRom : MonoBehaviour
 		}
 		instance = this;
 		lr = GetComponent<LineRenderer>();
+		meshCollider = gameObject.AddComponent<MeshCollider>();
+		mesh = new Mesh();
 	}
 
 	private void Update ()
 	{
+		if(refreshTime <= 0)
+			refreshTime = 0.5f; //half second
+		else
+		{
+			refreshTime -= Time.deltaTime;
+			return;
+		}
+
 		Vector3[] positions = new Vector3[controlPointsList.Count];
 		controlPointsList.Sort((m1, m2) => m1.pointId.CompareTo(m2.pointId));
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
 			positions[i] = controlPointsList[i].transform.position;
+			
 		}
 
 		lr.positionCount = positions.Length;
@@ -39,8 +54,11 @@ public class CatmullRom : MonoBehaviour
 			transform.forward = -controlPointsList[0].transform.up; 
             //plane.position = controlPointsList[0].transform.position - controlPointsList[0].transform.up * 0.1f;
             //plane.rotation = controlPointsList[0].transform.rotation;
+
         }
-        
+		
+		lr.BakeMesh(mesh, true);
+		meshCollider.sharedMesh = mesh;
 	}
 
 	//Display without having to press play
