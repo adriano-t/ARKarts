@@ -24,20 +24,36 @@ public class Car : MonoBehaviour
 
     public void Update()
     {
+        
+
+        //align car to the plane
+        if(CatmullRom.instance.controlPointsList.Count > 0)
+        {
+            Transform t = CatmullRom.instance.controlPointsList[0].transform;
+            transform.position = Vector3.ProjectOnPlane(transform.position - t.position,  t.up) + t.position;
+
+            
+            Vector3 forward = transform.forward;
+            Vector3 right = transform.right;
+            transform.up = t.up;
+            transform.right = right;
+            transform.forward = forward;
+            
+        }
         /////////////////////
         //controlli manuali
         /////////////////////
-        if(holdLeft && Mathf.Abs(speed) > 0.001f)
+        if(holdLeft /*&& Mathf.Abs(speed) > 0.001f*/)
             transform.RotateAround(transform.position, transform.up, - Time.deltaTime  * turnRadius);
 
-        if(holdRight && Mathf.Abs(speed) > 0.001f)
+        if(holdRight /*&& Mathf.Abs(speed) > 0.001f*/)
             transform.RotateAround(transform.position, transform.up, Time.deltaTime  * turnRadius);
             
         if(holdAccelerator)
-            speed += acceleration * Time.deltaTime * 0.01f;
+            speed += acceleration * Time.deltaTime * 0.1f;
 
         if(holdBrake)
-            speed -= acceleration * Time.deltaTime * 0.01f;
+            speed -= acceleration * Time.deltaTime * 0.1f;
 
         //limita la velocita' massima
         speed = Mathf.Clamp(speed, -maxSpeed, maxSpeed);
@@ -62,14 +78,6 @@ public class Car : MonoBehaviour
         {
             if(speed > maxSpeed/2.0f)
                 speed *= 0.9f;
-        }
-
-        //align car to the plane
-        if(CatmullRom.instance.controlPointsList.Count > 0)
-        {
-            Transform t = CatmullRom.instance.controlPointsList[0].transform;
-            transform.position = Vector3.ProjectOnPlane(transform.position - t.position,  t.up) + t.position;
-            transform.up = t.up;
         }
     }
 
