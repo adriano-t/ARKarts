@@ -27,10 +27,10 @@ public class Car : MonoBehaviour
         /////////////////////
         //controlli manuali
         /////////////////////
-        if(holdLeft && Mathf.Abs(speed) > 0.01f)
+        if(holdLeft && Mathf.Abs(speed) > 0.001f)
             transform.RotateAround(transform.position, transform.up, - Time.deltaTime  * turnRadius);
 
-        if(holdRight && Mathf.Abs(speed) > 0.01f)
+        if(holdRight && Mathf.Abs(speed) > 0.001f)
             transform.RotateAround(transform.position, transform.up, Time.deltaTime  * turnRadius);
             
         if(holdAccelerator)
