@@ -71,9 +71,7 @@ public class CatmullRom : MonoBehaviour
 	//Display without having to press play
 	void OnDrawGizmos ()
 	{
-		
-		for (int i = 0; i < positions.Length; i++)
-			Gizmos.DrawWireSphere(positions[i], 0.1f);
+		 
 		Gizmos.color = Color.white;
 
 		//Draw the Catmull-Rom spline between the points
