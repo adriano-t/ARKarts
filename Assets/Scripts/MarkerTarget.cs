@@ -8,12 +8,12 @@ public class MarkerTarget : MonoBehaviour
     public void OnTrackBegin ()
     {
         CatmullRom.instance.AddPoint(this);
-        Debug.LogError("asdded");
+        //Debug.LogError("asdded");
     }
 
     public void OnTrackEnd ()
     {
         CatmullRom.instance.RemovePoint(this);
-        Debug.LogError("removed");
+        //Debug.LogError("removed");
     }
 }
