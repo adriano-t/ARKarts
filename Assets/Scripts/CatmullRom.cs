@@ -63,7 +63,7 @@ public class CatmullRom : MonoBehaviour
 
         }
 		
-		lr.BakeMesh(mesh, true);
+		lr.BakeMesh(mesh, false);
 		meshCollider.sharedMesh = mesh;
 	}
 

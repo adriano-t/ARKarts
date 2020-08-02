@@ -59,6 +59,14 @@ public class Car : MonoBehaviour
             if(speed > maxSpeed/2.0f)
                 speed *= 0.9f;
         }
+
+        //align car to the plane
+        if(CatmullRom.instance.controlPointsList.Count > 0)
+        {
+            Transform t = CatmullRom.instance.controlPointsList[0].transform;
+            transform.position = Vector3.ProjectOnPlane(transform.position - t.position,  t.up) + t.position;
+            transform.up = t.up;
+        }
     }
 
     public void Accelerate(bool pressed)
