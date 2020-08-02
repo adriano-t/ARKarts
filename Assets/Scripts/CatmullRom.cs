@@ -7,6 +7,7 @@ public class CatmullRom : MonoBehaviour
 {
     //public Transform plane;
 	public static CatmullRom instance;
+	public Transform colliderChild;
 	//Has to be at least 4 points
 	public List<MarkerTarget> controlPointsList = new List<MarkerTarget>();
 	private Vector3[] positions;
@@ -26,7 +27,7 @@ public class CatmullRom : MonoBehaviour
 		}
 		instance = this;
 		lr = GetComponent<LineRenderer>();
-		meshCollider = gameObject.AddComponent<MeshCollider>();
+		meshCollider = colliderChild.GetComponent<MeshCollider>();
 		mesh = new Mesh();
 	}
 
@@ -39,13 +40,13 @@ public class CatmullRom : MonoBehaviour
 			refreshTime -= Time.deltaTime;
 			return;
 		}
-
+		
+		//generate points from the markers
 		positions = new Vector3[controlPointsList.Count];
 		controlPointsList.Sort((m1, m2) => m1.pointId.CompareTo(m2.pointId));
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
 			positions[i] = controlPointsList[i].transform.position;
-
 			//align to the first
 			if(i > 0)
 				positions[i] = Vector3.ProjectOnPlane(
@@ -54,17 +55,21 @@ public class CatmullRom : MonoBehaviour
 			 
 		}
 
+		//align the spline direction to the first marker
 		lr.positionCount = positions.Length;
 		lr.SetPositions(positions);
         if(controlPointsList.Count> 0)
         {
 			transform.forward = -controlPointsList[0].transform.up; 
+			
+			colliderChild.transform.rotation = Quaternion.identity;
             //plane.position = controlPointsList[0].transform.position - controlPointsList[0].transform.up * 0.1f;
             //plane.rotation = controlPointsList[0].transform.rotation;
 
         }
 		
-		lr.BakeMesh(mesh, false);
+		//bake a collision mesh
+		lr.BakeMesh(mesh, true);
 		meshCollider.sharedMesh = mesh;
 	}
 
