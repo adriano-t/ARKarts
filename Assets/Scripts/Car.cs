@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Car : MonoBehaviour
 {
@@ -15,31 +16,57 @@ public class Car : MonoBehaviour
     bool holdAccelerator = false;
     bool holdBrake = false;
     
-    
+    public Image iconLeft;
+    public Image iconRight;
+    public Image iconAccelerator;
+    public Image iconBrake;
     // Start is called before the first frame update
+    bool showed = false;
     public void Start()
     {
-        
+        showed = false;
+        transform.position = Vector3.one * 10000;
+        transform.up = -Camera.main.transform.forward;
+    }
+
+    public void ResetPosition()
+    {
+        if(CatmullRom.instance.controlPointsList.Count > 0)
+        {
+            Transform t = CatmullRom.instance.controlPointsList[0].transform;
+            transform.position = t.position;
+            transform.up = t.up;
+        }
+        else
+        {
+            transform.position = Camera.main.transform.position + Camera.main.transform.forward * 10.0f;
+            transform.up = -Camera.main.transform.forward;
+        }
     }
 
     public void Update()
     {
-        
 
         //align car to the plane
         if(CatmullRom.instance.controlPointsList.Count > 0)
         {
+            if(!showed)
+            {
+                showed = true;
+                ResetPosition();
+            }
+
             Transform t = CatmullRom.instance.controlPointsList[0].transform;
             transform.position = Vector3.ProjectOnPlane(transform.position - t.position,  t.up) + t.position;
 
-
             Vector3 forward = transform.forward;
-            Vector3 right = transform.right;
+            //Vector3 right = transform.right;
             transform.up = t.up;
-            transform.right = right;
+            //transform.right = right;
             transform.forward = forward;
             
         }
+
         /////////////////////
         //controlli manuali
         /////////////////////
@@ -84,19 +111,23 @@ public class Car : MonoBehaviour
     public void Accelerate(bool pressed)
     {
         holdAccelerator = pressed;
+        iconAccelerator.color = pressed ? Color.white : Color.black;
     }
 
     public void Brake(bool pressed){
         holdBrake = pressed;
+        iconBrake.color = pressed ? Color.white : Color.black;
     }
 
     public void TurnLeft(bool pressed)
     {
         holdLeft = pressed;
+        iconLeft.color = pressed ? Color.white : Color.black;
     }
 
     public void TurnRight(bool pressed)
     {
         holdRight = pressed;
+        iconRight.color = pressed ? Color.white : Color.black;
     }
 }

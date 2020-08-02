@@ -102,12 +102,12 @@ TextureImporter:
       name: spr_turn_right
       rect:
         serializedVersion: 2
-        x: 214
-        y: 330
-        width: 206
-        height: 191
+        x: 293
+        y: 335
+        width: 214
+        height: 162
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -123,12 +123,12 @@ TextureImporter:
       name: spr_turn_left
       rect:
         serializedVersion: 2
-        x: 3
-        y: 330
+        x: 7
+        y: 331
         width: 211
-        height: 193
+        height: 173
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -144,12 +144,12 @@ TextureImporter:
       name: spr_brake
       rect:
         serializedVersion: 2
-        x: 41
-        y: 113
+        x: 58
+        y: 80
         width: 182
         height: 208
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -165,12 +165,12 @@ TextureImporter:
       name: spr_accelerator
       rect:
         serializedVersion: 2
-        x: 237
-        y: 31
+        x: 304
+        y: 28
         width: 140
         height: 294
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
