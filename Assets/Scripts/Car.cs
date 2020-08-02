@@ -6,7 +6,7 @@ public class Car : MonoBehaviour
 {
     Vector3 direction = Vector3.zero;
     float speed = 0;
-    float maxSpeed = 0.1f;
+    float maxSpeed = 0.2f;
     public float turnRadius = 90.0f;
     public float acceleration = 10.0f;
     public float brakePower = 0.5f;
@@ -32,7 +32,7 @@ public class Car : MonoBehaviour
             Transform t = CatmullRom.instance.controlPointsList[0].transform;
             transform.position = Vector3.ProjectOnPlane(transform.position - t.position,  t.up) + t.position;
 
-            
+
             Vector3 forward = transform.forward;
             Vector3 right = transform.right;
             transform.up = t.up;
@@ -43,10 +43,10 @@ public class Car : MonoBehaviour
         /////////////////////
         //controlli manuali
         /////////////////////
-        if(holdLeft /*&& Mathf.Abs(speed) > 0.001f*/)
+        if(holdLeft && Mathf.Abs(speed) > 0.001f)
             transform.RotateAround(transform.position, transform.up, - Time.deltaTime  * turnRadius);
 
-        if(holdRight /*&& Mathf.Abs(speed) > 0.001f*/)
+        if(holdRight && Mathf.Abs(speed) > 0.001f)
             transform.RotateAround(transform.position, transform.up, Time.deltaTime  * turnRadius);
             
         if(holdAccelerator)
