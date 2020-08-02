@@ -44,7 +44,13 @@ public class CatmullRom : MonoBehaviour
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
 			positions[i] = controlPointsList[i].transform.position;
-			
+
+			//align to the first
+			if(i > 0)
+				positions[i] = Vector3.ProjectOnPlane(
+					positions[i] - positions[0], 
+					controlPointsList[i].transform.up) + positions[0];
+			 
 		}
 
 		lr.positionCount = positions.Length;
