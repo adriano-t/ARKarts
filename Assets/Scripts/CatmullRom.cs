@@ -9,6 +9,7 @@ public class CatmullRom : MonoBehaviour
 	public static CatmullRom instance;
 	//Has to be at least 4 points
 	public List<MarkerTarget> controlPointsList = new List<MarkerTarget>();
+	private Vector3[] positions;
 	//Are we making a line or a loop?
 	public bool isLooping = true;
 	float refreshTime = 0;
@@ -39,7 +40,7 @@ public class CatmullRom : MonoBehaviour
 			return;
 		}
 
-		Vector3[] positions = new Vector3[controlPointsList.Count];
+		positions = new Vector3[controlPointsList.Count];
 		controlPointsList.Sort((m1, m2) => m1.pointId.CompareTo(m2.pointId));
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
@@ -49,7 +50,7 @@ public class CatmullRom : MonoBehaviour
 			if(i > 0)
 				positions[i] = Vector3.ProjectOnPlane(
 					positions[i] - positions[0], 
-					controlPointsList[i].transform.up) + positions[0];
+					controlPointsList[0].transform.up) + positions[0];
 			 
 		}
 
@@ -70,6 +71,9 @@ public class CatmullRom : MonoBehaviour
 	//Display without having to press play
 	void OnDrawGizmos ()
 	{
+		
+		for (int i = 0; i < positions.Length; i++)
+			Gizmos.DrawWireSphere(positions[i], 0.1f);
 		Gizmos.color = Color.white;
 
 		//Draw the Catmull-Rom spline between the points

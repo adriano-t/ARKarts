@@ -24,6 +24,9 @@ public class Car : MonoBehaviour
 
     public void Update()
     {
+        /////////////////////
+        //controlli manuali
+        /////////////////////
         if(holdLeft && Mathf.Abs(speed) > 0.01f)
             transform.RotateAround(transform.position, transform.up, - Time.deltaTime  * turnRadius);
 
@@ -51,6 +54,7 @@ public class Car : MonoBehaviour
         transform.position -= transform.forward * speed;
         //Debug.Log("speed: " + speed);
 
+        //limita la posizione della macchina a un certo raggio intorno alla pista
         transform.position = Vector3.ClampMagnitude(transform.position, 10.0f);
 
         //slow down outside
