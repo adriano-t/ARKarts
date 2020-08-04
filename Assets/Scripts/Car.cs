@@ -15,21 +15,25 @@ public class Car : MonoBehaviour
     bool holdRight = false;
     bool holdAccelerator = false;
     bool holdBrake = false;
-    
+
+    public AudioSource src;
+
     public Image iconLeft;
     public Image iconRight;
     public Image iconAccelerator;
     public Image iconBrake;
+
     public Text timeLabel;
     public Text lapLabel;
     float raceTime = 0;
     int targetIndex = 0;
-    int lap = 1;
+    int lap = 1; 
     // Start is called before the first frame update
     bool showed = false;
     public void Start()
     {
         showed = false;
+        src = GetComponent<AudioSource>();
         transform.position = Vector3.one * 10000;
         transform.up = -Camera.main.transform.forward;
 
@@ -163,6 +167,13 @@ public class Car : MonoBehaviour
     public void Accelerate(bool pressed)
     {
         holdAccelerator = pressed;
+        if(pressed)
+        {
+            src.Play();
+        }else
+        {
+            src.Stop();
+        }
         iconAccelerator.color = pressed ? Color.white : Color.black;
     }
 
