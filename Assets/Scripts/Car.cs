@@ -20,6 +20,11 @@ public class Car : MonoBehaviour
     public Image iconRight;
     public Image iconAccelerator;
     public Image iconBrake;
+    public Text timeLabel;
+    public Text lapLabel;
+    float raceTime = 0;
+    int targetIndex = 0;
+    int lap = 1;
     // Start is called before the first frame update
     bool showed = false;
     public void Start()
@@ -27,11 +32,17 @@ public class Car : MonoBehaviour
         showed = false;
         transform.position = Vector3.one * 10000;
         transform.up = -Camera.main.transform.forward;
+
     }
 
     public void ResetPosition()
     {
-        if(CatmullRom.instance.controlPointsList.Count > 0)
+        lap = 1;
+        speed = 0;
+        raceTime = 0;
+        targetIndex = 0;
+        NextTarget();
+        if (CatmullRom.instance.controlPointsList.Count > 0)
         {
             Transform t = CatmullRom.instance.controlPointsList[0].transform;
             transform.position = t.position;
@@ -46,6 +57,10 @@ public class Car : MonoBehaviour
 
     public void Update()
     {
+        raceTime += Time.deltaTime; 
+        float minutes = Mathf.Floor(raceTime / 60.0f);
+        float seconds = Mathf.Floor(Mathf.Repeat(raceTime, 60));
+        timeLabel.text = minutes + ":" + seconds;
 
         //align car to the plane
         if(CatmullRom.instance.controlPointsList.Count > 0)
@@ -101,13 +116,50 @@ public class Car : MonoBehaviour
         transform.position = Vector3.ClampMagnitude(transform.position, 10.0f);
 
         //slow down outside
-        if(!Physics.CheckSphere(transform.position, 1.2f))
+        Collider[] colls = Physics.OverlapSphere(transform.position, 0.5f);
+        foreach(var col in colls)
         {
-            if(speed > maxSpeed/2.0f)
-                speed *= 0.9f;
+            if (col.gameObject.CompareTag("target"))
+            {
+                NextTarget();
+            }
+            else
+            {
+                if (speed > maxSpeed / 2.0f)
+                    speed *= 0.9f;
+            }
         }
     }
 
+    public void NextTarget ()
+    {
+        targetIndex++;
+        var pts = CatmullRom.instance.controlPointsList;
+        if (targetIndex > pts.Count - 1)
+            targetIndex = 0;
+
+        if (targetIndex == 0 && pts.Count > 3)
+        {
+            lap++;
+            lapLabel.text = "Giri: " + lap;
+            if(lap >= 4)
+            {
+                Debug.Log("fine");
+            }
+        }
+
+        if (pts.Count > 0)
+        {
+            foreach(var target in pts)
+            {
+                target.transform.GetChild(0).gameObject.SetActive(false);
+            }
+
+            //enable the target
+            pts[targetIndex].transform.GetChild(0).gameObject.SetActive(true);
+        }
+
+    }
     public void Accelerate(bool pressed)
     {
         holdAccelerator = pressed;

@@ -16,7 +16,9 @@ public class CatmullRom : MonoBehaviour
 	float refreshTime = 0;
 	LineRenderer lr;
 	MeshCollider meshCollider;
-	
+
+	public Transform goal;
+
 	Mesh mesh;
 	private void Awake ()
 	{
@@ -46,6 +48,19 @@ public class CatmullRom : MonoBehaviour
 		controlPointsList.Sort((m1, m2) => m1.pointId.CompareTo(m2.pointId));
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
+			//orienta i target intermedi
+			if (controlPointsList.Count > 1)
+			{
+				//ottieni il prossimo punto
+				int idx2 = (i + 1) % controlPointsList.Count;
+
+				Quaternion rot = Quaternion.LookRotation(
+					(controlPointsList[i].transform.position - controlPointsList[idx2].transform.position).normalized,
+					controlPointsList[0].transform.up);
+
+				controlPointsList[i].transform.GetChild(0).rotation = rot;
+			}
+
 			positions[i] = controlPointsList[i].transform.position;
 			//align to the first
 			if(i > 0)
@@ -54,6 +69,15 @@ public class CatmullRom : MonoBehaviour
 					controlPointsList[0].transform.up) + positions[0];
 			 
 		}
+
+		if (positions.Length > 2)
+		{
+			//sposta la bandiera d'arrivo nel punto corretto e la orienta
+			goal.position = positions[0];
+			goal.rotation = Quaternion.LookRotation((positions[1] - positions[0]).normalized, controlPointsList[0].transform.up);
+		}
+
+
 
 		//align the spline direction to the first marker
 		lr.positionCount = positions.Length;
