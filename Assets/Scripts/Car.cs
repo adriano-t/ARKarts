@@ -40,7 +40,9 @@ public class Car : MonoBehaviour
         showed = false;
         src = GetComponent<AudioSource>();
         transform.position = Vector3.one * 10000;
-        transform.up = -Camera.main.transform.forward; 
+        transform.up = -Camera.main.transform.forward;
+
+        src.Play();
     }
 
     public void ResetPosition()
@@ -49,7 +51,6 @@ public class Car : MonoBehaviour
         speed = 0;
         raceTime = 0;
         targetIndex = 0;
-        src.Stop();
         NextTarget();
         
         if (CatmullRom.instance.controlPointsList.Count > 0)
@@ -129,8 +130,9 @@ public class Car : MonoBehaviour
         src.volume = 0.05f + 0.1f * Mathf.Abs(speed) / maxSpeed;
         
         //ferma il suono quando la macchina è ferma
-        if (Mathf.Abs(speed) <= minSpeed)
-            src.Stop();
+        //if (Mathf.Abs(speed) <= minSpeed)
+        //    src.Stop()
+        
 
         //slow down outside
         Collider[] colls = Physics.OverlapSphere(transform.position, 0.5f);
@@ -161,6 +163,7 @@ public class Car : MonoBehaviour
             lapLabel.text = "Giri: " + lap;
             if(lap >= 4)
             {
+                speed = 0;
                 Debug.Log("fine");
                 panelLabel.text = "Tempo arrivo: " + timeLabel.text;
                 panel.SetActive(true);
