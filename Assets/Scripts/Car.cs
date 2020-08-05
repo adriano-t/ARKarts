@@ -46,11 +46,11 @@ public class Car : MonoBehaviour
         raceTime = 0;
         targetIndex = 0;
         NextTarget();
+        
         if (CatmullRom.instance.controlPointsList.Count > 0)
         {
-            Transform t = CatmullRom.instance.controlPointsList[0].transform;
-            transform.position = t.position;
-            transform.up = t.up;
+            Transform goal = CatmullRom.instance.goal;
+            transform.SetPositionAndRotation(goal.position, goal.rotation);
         }
         else
         {

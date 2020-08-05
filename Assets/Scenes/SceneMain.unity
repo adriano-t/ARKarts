@@ -3557,8 +3557,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colliderChild: {fileID: 1423501705}
   controlPointsList: []
-  isLooping: 1
   goal: {fileID: 306382286}
+  startDirection: {x: 0, y: 0, z: 0}
 --- !u!4 &1125618714
 Transform:
   m_ObjectHideFlags: 0
@@ -3663,7 +3663,7 @@ LineRenderer:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 10
+    numCornerVertices: 0
     numCapVertices: 0
     alignment: 1
     textureMode: 1
@@ -4882,6 +4882,7 @@ MonoBehaviour:
   turnRadius: 90
   acceleration: 5
   brakePower: 0.5
+  src: {fileID: 0}
   iconLeft: {fileID: 101895003}
   iconRight: {fileID: 430501050}
   iconAccelerator: {fileID: 463614263}

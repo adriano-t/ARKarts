@@ -11,14 +11,13 @@ public class CatmullRom : MonoBehaviour
 	//Has to be at least 4 points
 	public List<MarkerTarget> controlPointsList = new List<MarkerTarget>();
 	private Vector3[] positions;
-	//Are we making a line or a loop?
-	public bool isLooping = true;
+
 	float refreshTime = 0;
 	LineRenderer lr;
 	MeshCollider meshCollider;
 
 	public Transform goal;
-
+	public Vector3 startDirection;
 	Mesh mesh;
 	private void Awake ()
 	{
@@ -42,54 +41,104 @@ public class CatmullRom : MonoBehaviour
 			refreshTime -= Time.deltaTime;
 			return;
 		}
-		
-		//generate points from the markers
-		positions = new Vector3[controlPointsList.Count];
+
+		float resolution = 0.1f;
+		int segments = Mathf.FloorToInt(1f / resolution);
+
+		//sort points
 		controlPointsList.Sort((m1, m2) => m1.pointId.CompareTo(m2.pointId));
+
+		Vector3 trackUp = Vector3.up;
+		if(controlPointsList.Count > 0)
+			trackUp = controlPointsList[0].transform.up;
+
+		//generate points from the markers
+		positions = new Vector3[controlPointsList.Count * segments];
+
+		int elem = 0;
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
-			//orienta i target intermedi
-			if (controlPointsList.Count > 1)
+			//catmull algorithm: 4 points
+			Vector3 p0 = controlPointsList[ClampListPos(i - 1)].transform.position;
+			Vector3 p1 = controlPointsList[i].transform.position;
+			Vector3 p2 = controlPointsList[ClampListPos(i + 1)].transform.position;
+			Vector3 p3 = controlPointsList[ClampListPos(i + 2)].transform.position;
+
+			
+
+
+			int startElem = elem;
+			for (int j = 1; j <= segments; j++)
 			{
-				//ottieni il prossimo punto
-				int idx2 = (i + 1) % controlPointsList.Count;
+				//Which t position are we at?
+				float t = j * resolution;
 
-				Quaternion rot = Quaternion.LookRotation(
-					(controlPointsList[i].transform.position - controlPointsList[idx2].transform.position).normalized,
-					controlPointsList[0].transform.up);
+				//Find the coordinate between the end points with a Catmull-Rom spline
+				Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
+				 
+				//align to the first
+				if (i > 0)
+				{
+					newPos = Vector3.ProjectOnPlane(newPos - positions[0], trackUp) + positions[0];
 
-				controlPointsList[i].transform.GetChild(0).rotation = rot;
+				}
+				positions[elem] = newPos;
+
+				elem++;
+
 			}
 
-			positions[i] = controlPointsList[i].transform.position;
-			//align to the first
-			if(i > 0)
-				positions[i] = Vector3.ProjectOnPlane(
-					positions[i] - positions[0], 
-					controlPointsList[0].transform.up) + positions[0];
-			 
+			
+
+			//muovi la barra sul punto della pista
+			Transform child = controlPointsList[i].transform.GetChild(0);
+			child.position = positions[startElem];
+
 		}
+
+
+		//orienta i target intermedi
+		for (int i = 0; i < controlPointsList.Count; i++)
+		{
+			int startElem = i * segments;
+			Transform child;
+			if (positions.Length > 1)
+			{
+				//ottieni il punto precedente
+				int idx1 = startElem - 1;
+				if (idx1 < 0)
+					idx1 = positions.Length - 1;
+
+				//ottieni il punto successivo
+				int idx2 = (startElem + 1) % positions.Length;
+
+				//orienta usando il punto precedente e il successivo
+				Quaternion rot = Quaternion.LookRotation((positions[idx2] - positions[idx1]).normalized, trackUp);
+
+				child = controlPointsList[i].transform.GetChild(0);
+				child.rotation = rot;
+			}
+		}
+
 
 		if (positions.Length > 2)
 		{
 			//sposta la bandiera d'arrivo nel punto corretto e la orienta
 			goal.position = positions[0];
-			goal.rotation = Quaternion.LookRotation((positions[1] - positions[0]).normalized, controlPointsList[0].transform.up);
+			goal.rotation = Quaternion.LookRotation((positions[positions.Length - 1] - positions[1]).normalized, trackUp);
+
 		}
-
-
 
 		//align the spline direction to the first marker
 		lr.positionCount = positions.Length;
 		lr.SetPositions(positions);
         if(controlPointsList.Count> 0)
         {
-			transform.forward = -controlPointsList[0].transform.up; 
+			transform.forward = -trackUp; 
 			
 			colliderChild.transform.rotation = Quaternion.identity;
             //plane.position = controlPointsList[0].transform.position - controlPointsList[0].transform.up * 0.1f;
             //plane.rotation = controlPointsList[0].transform.rotation;
-
         }
 		
 		//bake a collision mesh
@@ -100,20 +149,12 @@ public class CatmullRom : MonoBehaviour
 	//Display without having to press play
 	void OnDrawGizmos ()
 	{
-		 
 		Gizmos.color = Color.white;
 
 		//Draw the Catmull-Rom spline between the points
 		for (int i = 0; i < controlPointsList.Count; i++)
 		{
-			//Cant draw between the endpoints
-			//Neither do we need to draw from the second to the last endpoint
-			//...if we are not making a looping line
-			if ((i == 0 || i == controlPointsList.Count - 2 || i == controlPointsList.Count - 1) && !isLooping)
-			{
-				continue;
-			}
-
+			 
 			DisplayCatmullRomSpline(i);
 		}
 	}
