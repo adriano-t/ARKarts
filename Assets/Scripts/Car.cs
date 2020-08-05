@@ -7,9 +7,10 @@ public class Car : MonoBehaviour
 {
     Vector3 direction = Vector3.zero;
     float speed = 0;
-    float maxSpeed = 0.2f;
+    float maxSpeed = 0.15f;
+    float minSpeed = 0.001f;
     public float turnRadius = 90.0f;
-    public float acceleration = 10.0f;
+    public float acceleration = 5;
     public float brakePower = 0.5f;
     bool holdLeft = false;
     bool holdRight = false;
@@ -23,28 +24,32 @@ public class Car : MonoBehaviour
     public Image iconAccelerator;
     public Image iconBrake;
 
+    public GameObject panel;
+    public Text panelLabel;
     public Text timeLabel;
     public Text lapLabel;
     float raceTime = 0;
     int targetIndex = 0;
-    int lap = 1; 
+    int lap = 1;
     // Start is called before the first frame update
     bool showed = false;
     public void Start()
     {
+        panel.SetActive(false);
+        src.volume = 0.5f;
         showed = false;
         src = GetComponent<AudioSource>();
         transform.position = Vector3.one * 10000;
-        transform.up = -Camera.main.transform.forward;
-
+        transform.up = -Camera.main.transform.forward; 
     }
 
     public void ResetPosition()
     {
-        lap = 1;
+        lap = 0;
         speed = 0;
         raceTime = 0;
         targetIndex = 0;
+        src.Stop();
         NextTarget();
         
         if (CatmullRom.instance.controlPointsList.Count > 0)
@@ -89,10 +94,10 @@ public class Car : MonoBehaviour
         /////////////////////
         //controlli manuali
         /////////////////////
-        if(holdLeft && Mathf.Abs(speed) > 0.001f)
+        if(holdLeft && Mathf.Abs(speed) > minSpeed)
             transform.RotateAround(transform.position, transform.up, - Time.deltaTime  * turnRadius);
 
-        if(holdRight && Mathf.Abs(speed) > 0.001f)
+        if(holdRight && Mathf.Abs(speed) > minSpeed)
             transform.RotateAround(transform.position, transform.up, Time.deltaTime  * turnRadius);
             
         if(holdAccelerator)
@@ -119,6 +124,14 @@ public class Car : MonoBehaviour
         //limita la posizione della macchina a un certo raggio intorno alla pista
         transform.position = Vector3.ClampMagnitude(transform.position, 10.0f);
 
+        //regola il pitch del suono in base alla speed
+        src.pitch = 0.3f + 0.7f * Mathf.Abs(speed) / maxSpeed;
+        src.volume = 0.05f + 0.1f * Mathf.Abs(speed) / maxSpeed;
+        
+        //ferma il suono quando la macchina è ferma
+        if (Mathf.Abs(speed) <= minSpeed)
+            src.Stop();
+
         //slow down outside
         Collider[] colls = Physics.OverlapSphere(transform.position, 0.5f);
         foreach(var col in colls)
@@ -142,13 +155,15 @@ public class Car : MonoBehaviour
         if (targetIndex > pts.Count - 1)
             targetIndex = 0;
 
-        if (targetIndex == 0 && pts.Count > 3)
+        if (targetIndex == 1 && pts.Count > 3)
         {
             lap++;
             lapLabel.text = "Giri: " + lap;
             if(lap >= 4)
             {
                 Debug.Log("fine");
+                panelLabel.text = "Tempo arrivo: " + timeLabel.text;
+                panel.SetActive(true);
             }
         }
 
@@ -167,12 +182,9 @@ public class Car : MonoBehaviour
     public void Accelerate(bool pressed)
     {
         holdAccelerator = pressed;
-        if(pressed)
+        if(pressed && !src.isPlaying)
         {
             src.Play();
-        }else
-        {
-            src.Stop();
         }
         iconAccelerator.color = pressed ? Color.white : Color.black;
     }
