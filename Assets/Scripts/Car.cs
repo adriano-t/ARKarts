@@ -33,6 +33,14 @@ public class Car : MonoBehaviour
     int lap = 1;
     // Start is called before the first frame update
     bool showed = false;
+
+    public static Car instance;
+
+    private void Awake ()
+    {
+        instance = this;
+    }
+
     public void Start()
     {
         panel.SetActive(false);
@@ -63,6 +71,33 @@ public class Car : MonoBehaviour
             transform.position = Camera.main.transform.position + Camera.main.transform.forward * 10.0f;
             transform.up = -Camera.main.transform.forward;
         }
+    }
+
+    public void MoveTo(Vector2 direction)
+    {
+        Debug.Log(direction);
+
+        Vector3 dir = Camera.main.transform.TransformDirection(direction);
+        Debug.DrawRay(Camera.main.transform.position, dir, Color.red, 3.0f);
+
+
+        Vector3 targetPos = transform.position + dir;
+
+        if (CatmullRom.instance.controlPointsList.Count > 0)
+        {
+            Transform t = CatmullRom.instance.controlPointsList[0].transform;
+            targetPos = Vector3.ProjectOnPlane(targetPos - t.position, t.up) + t.position;
+            Debug.DrawLine(transform.position, targetPos, Color.red, 5.0f);
+
+            Vector3 targetDir = (targetPos - transform.position).normalized;
+
+            Quaternion rot = Quaternion.LookRotation(-targetDir, transform.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, turnRadius * 0.05f * Time.deltaTime);
+            float dot = Mathf.Min(0.2f, Vector3.Dot(transform.forward, -targetDir));
+            speed += dot * acceleration * Time.deltaTime   * 0.1f;
+        }
+
+
     }
 
     public void Update()
@@ -112,8 +147,7 @@ public class Car : MonoBehaviour
 
         //rallenta
         speed *= 0.99f;
-        if(speed < 0.01f)
-            speed *= 0.1f;
+
 
         //rallenta di piu' se gira
         if(holdLeft || holdRight) 
