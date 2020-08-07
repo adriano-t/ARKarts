@@ -50,7 +50,6 @@ public class Car : MonoBehaviour
         transform.position = Vector3.one * 10000;
         transform.up = -Camera.main.transform.forward;
 
-        src.Play();
     }
 
     public void ResetPosition()
@@ -60,7 +59,9 @@ public class Car : MonoBehaviour
         raceTime = 0;
         targetIndex = 0;
         NextTarget();
-        
+        if(!src.isPlaying)
+        src.Play();
+
         if (CatmullRom.instance.controlPointsList.Count > 0)
         {
             Transform goal = CatmullRom.instance.goal;
@@ -92,9 +93,12 @@ public class Car : MonoBehaviour
             Vector3 targetDir = (targetPos - transform.position).normalized;
 
             Quaternion rot = Quaternion.LookRotation(-targetDir, transform.up);
+            Quaternion prevRotation = transform.rotation;
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, turnRadius * 0.05f * Time.deltaTime);
             float dot = Mathf.Min(0.2f, Vector3.Dot(transform.forward, -targetDir));
+            float angle = Quaternion.Angle(transform.rotation, prevRotation) / 360.0f;
             speed += dot * acceleration * Time.deltaTime   * 0.1f;
+            speed *= 1 - angle;
         }
 
 
@@ -201,6 +205,7 @@ public class Car : MonoBehaviour
                 Debug.Log("fine");
                 panelLabel.text = "Tempo arrivo: " + timeLabel.text;
                 panel.SetActive(true);
+                src.Stop();
             }
         }
 
@@ -214,7 +219,6 @@ public class Car : MonoBehaviour
             //enable the target
             pts[targetIndex].transform.GetChild(0).gameObject.SetActive(true);
         }
-
     }
     public void Accelerate(bool pressed)
     {
