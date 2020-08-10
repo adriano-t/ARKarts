@@ -51,7 +51,7 @@ public class Car : MonoBehaviour
         transform.up = -Camera.main.transform.forward;
 
     }
-
+    
     public void ResetPosition()
     {
         lap = 0;
@@ -222,6 +222,7 @@ public class Car : MonoBehaviour
     }
     public void Accelerate(bool pressed)
     {
+        Vibration.Vibrate(50);
         holdAccelerator = pressed;
         if(pressed && !src.isPlaying)
         {
@@ -231,18 +232,22 @@ public class Car : MonoBehaviour
     }
 
     public void Brake(bool pressed){
+        Vibration.Vibrate(50);
         holdBrake = pressed;
         iconBrake.color = pressed ? Color.white : Color.black;
     }
 
     public void TurnLeft(bool pressed)
     {
+        
+        Vibration.Vibrate(50);
         holdLeft = pressed;
         iconLeft.color = pressed ? Color.white : Color.black;
     }
 
     public void TurnRight(bool pressed)
     {
+        Vibration.Vibrate(50);
         holdRight = pressed;
         iconRight.color = pressed ? Color.white : Color.black;
     }
