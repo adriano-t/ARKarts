@@ -21,7 +21,6 @@ public class MobileInputController : MonoBehaviour, IBeginDragHandler, IDragHand
 
     public void OnDrag (PointerEventData eventData)
     {
-
         PointPosition = new Vector2((eventData.position.x - Background.position.x) / ((Background.rect.size.x - Knob.rect.size.x) / 2), (eventData.position.y - Background.position.y) / ((Background.rect.size.y - Knob.rect.size.y) / 2));
 
         PointPosition = (PointPosition.magnitude > 1.0f) ? PointPosition.normalized : PointPosition;
@@ -53,9 +52,21 @@ public class MobileInputController : MonoBehaviour, IBeginDragHandler, IDragHand
         Horizontal = PointPosition.x;
         Vertical = PointPosition.y;
 
-        //move car if needed
-        if(Horizontal != 0 || Vertical != 0)
+
+
+        //move car with joystick
+        if (Horizontal != 0 || Vertical != 0)
             Car.instance.MoveTo(new Vector2(Horizontal, Vertical));
+        else 
+        //move car with touch
+            if (Input.touchCount > 0 && Car.instance)
+            {
+                Touch touch = Input.GetTouch(0);
+
+                Vector2 pos = Camera.main.WorldToScreenPoint(Car.instance.transform.position);
+                Car.instance.MoveTo((touch.position - pos).normalized);
+
+            }
     }
 
     public Vector2 Coordinate ()
